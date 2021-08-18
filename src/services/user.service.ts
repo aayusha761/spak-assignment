@@ -32,24 +32,15 @@ export class UserService {
     const { email, contact } = createUserDTO;
 
     const user: UserEntity = await UserEntity.getUserByEmail(email);
-
-    if (user) {
-      return 'Email is already registered';
-    }
-
     const user1: UserEntity = await UserEntity.getUserByContact(contact);
-
-    if (user1) {
-      console.log(user1);
-      return 'Contact number is already registered';
-    }
 
     if (!user && !user1) {
       const newUser: UserEntity = await UserEntity.create(createUserDTO);
       const data = await UserEntity.save(newUser);
-      return true;
+      return { message: 'User Signed Up Successfully', code: 200 };
+    } else {
+      return { message: 'User Already Exists', code: 200 };
     }
-    return false;
   }
 
   async logout() {
@@ -57,6 +48,12 @@ export class UserService {
   }
 
   async findUserByEmail(email: string): Promise<UserEntity> {
-    return await UserEntity.getUserByEmail(email);
+    return await UserEntity.findOne({
+      where: { email },
+    });
+  }
+
+  async findUserByContact(contact: string): Promise<UserEntity> {
+    return await UserEntity.getUserByContact(contact);
   }
 }

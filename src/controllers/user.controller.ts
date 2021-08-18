@@ -6,7 +6,7 @@ import {
   Post,
   Req,
   Response,
-  UseGuards,
+  UseGuards, ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import LoginDTO from '../schema/LoginDTO';
@@ -27,19 +27,12 @@ export class UserController {
 
   @Post('/signup')
   async createUser(
-    @Body() createUserDTO: CreateUserDTO,
+    @Body(new ValidationPipe()) createUserDTO: CreateUserDTO,
     @Req() req,
     @Response() res,
   ) {
-    if (await this.userService.createUser(createUserDTO)) {
-      res
-        .status(HttpStatus.OK)
-        .json('You have been successfully signed up with email: ');
-    } else {
-      return res
-        .status(HttpStatus.FORBIDDEN)
-        .json({ message: 'Email already exists' });
-    }
+    const msg = await this.userService.createUser(createUserDTO);
+    res.status(HttpStatus.OK).json(msg);
   }
 
   @Post('/logout')
@@ -47,9 +40,17 @@ export class UserController {
     return await this.userService.logout();
   }
 
-  @Get('/get')
+  @Get('/getUserByEmail')
   @UseGuards(AuthenticationGuard, new RolesGuard([EAccess.ADMIN]))
   async findUserByEmail(@Body('email') email: string): Promise<UserEntity> {
     return await this.userService.findUserByEmail(email);
+  }
+
+  @Get('/getUserByContact')
+  @UseGuards(AuthenticationGuard, new RolesGuard([EAccess.ADMIN]))
+  async findUserByContact(
+    @Body('contact') contact: string,
+  ): Promise<UserEntity> {
+    return await this.userService.findUserByContact(contact);
   }
 }

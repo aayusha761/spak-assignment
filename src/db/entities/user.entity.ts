@@ -39,19 +39,30 @@ class UserEntity extends BaseEntity {
   }
 
   public static async findById(id: number): Promise<UserEntity> {
-    return await UserEntity.findOne({ where: { id } });
+    return await UserEntity.findOne({
+      select: ['name', 'email', 'address', 'contact'],
+      where: { id },
+    });
   }
 
   public static async getUserByName(name: string): Promise<UserEntity[]> {
-    return await UserEntity.find({ where: { name } });
+    return await UserEntity.find({
+      select: ['name', 'email', 'address', 'contact'],
+      where: { name },
+    });
   }
 
   public static async getUserByEmail(email: string): Promise<UserEntity> {
-    return await UserEntity.findOne({ where: { email } });
+    return await UserEntity.findOne({
+      where: { email },
+    });
   }
 
-  public static async getUserByContact(name: string): Promise<UserEntity> {
-    return await UserEntity.findOne({ where: { name } });
+  public static async getUserByContact(contact: string): Promise<UserEntity> {
+    return await UserEntity.findOne({
+      select: ['name', 'email', 'address', 'contact'],
+      where: { contact },
+    });
   }
 
   public static async removeUser(email: string): Promise<UserEntity> {
