@@ -48,6 +48,7 @@ export class UserService {
 
   async findUserByEmail(email: string): Promise<UserEntity> {
     return await UserEntity.findOne({
+      select: ['name', 'email', 'address', 'contact'],
       where: { email },
     });
   }
