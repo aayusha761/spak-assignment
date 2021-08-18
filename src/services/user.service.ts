@@ -4,27 +4,26 @@ import CreateUserDTO from '../schema/CreateUserDTO';
 import UserEntity from '../db/entities/user.entity';
 import * as bcryprt from 'bcryptjs';
 import AuthService from './auth.service';
+import EMessages from '../enums/EMessages';
 
 @Injectable()
 export class UserService {
   constructor(private readonly authService: AuthService) {}
 
-  async login(loginCredentials: LoginDTO, res) {
+  async login(loginCredentials: LoginDTO) {
     const { email, password } = loginCredentials;
     console.log('email', email);
     const user: UserEntity = await UserEntity.getUserByEmail(email);
 
     if (!user) {
       console.log('User does not exists');
-      return false;
+      return { message: EMessages.UNAUTHORIZED_REQUEST, code: 401 };
     }
     if (await bcryprt.compare(password, user.password)) {
       console.log('bcrypt compared');
-      return res
-        .status(HttpStatus.OK)
-        .json(await this.authService.generateJWTToken(user));
+      return await this.authService.generateJWTToken(user);
     } else {
-      return { message: 'Username or password wrong!' };
+      return { message: EMessages.UNAUTHORIZED_REQUEST, code: 401 };
     }
   }
 

@@ -6,7 +6,8 @@ import {
   Post,
   Req,
   Response,
-  UseGuards, ValidationPipe,
+  UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import LoginDTO from '../schema/LoginDTO';
@@ -21,8 +22,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('/login')
-  async login(@Body() loginCredentials: LoginDTO, @Req() req, @Response() res) {
-    return await this.userService.login(loginCredentials, res);
+  async login(@Body(new ValidationPipe()) loginCredentials: LoginDTO, @Req() req, @Response() res) {
+    const res1 = await this.userService.login(loginCredentials);
+    res.status(HttpStatus.UNAUTHORIZED).json(res1);
   }
 
   @Post('/signup')
