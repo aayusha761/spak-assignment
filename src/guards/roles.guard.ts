@@ -15,7 +15,6 @@ class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     const index = this.access.indexOf(user.access);
-    console.log(index);
     if (index !== -1) {
       return true;
     } else {

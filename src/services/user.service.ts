@@ -1,10 +1,11 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import LoginDTO from '../schema/LoginDTO';
 import CreateUserDTO from '../schema/CreateUserDTO';
 import UserEntity from '../db/entities/user.entity';
 import * as bcryprt from 'bcryptjs';
 import AuthService from './auth.service';
 import EMessages from '../enums/EMessages';
+import JWTManager from '../logout/JWTManager';
 
 @Injectable()
 export class UserService {
@@ -12,15 +13,12 @@ export class UserService {
 
   async login(loginCredentials: LoginDTO) {
     const { email, password } = loginCredentials;
-    console.log('email', email);
     const user: UserEntity = await UserEntity.getUserByEmail(email);
 
     if (!user) {
-      console.log('User does not exists');
       return { message: EMessages.UNAUTHORIZED_REQUEST, code: 401 };
     }
     if (await bcryprt.compare(password, user.password)) {
-      console.log('bcrypt compared');
       return await this.authService.generateJWTToken(user);
     } else {
       return { message: EMessages.UNAUTHORIZED_REQUEST, code: 401 };
@@ -42,8 +40,9 @@ export class UserService {
     }
   }
 
-  async logout() {
-    return undefined;
+  async logout(accessToken: string) {
+    await JWTManager.revoke(accessToken);
+    return { message: EMessages.INVALID_AUTHENTICATION_TOKEN, code: 401 };
   }
 
   async findUserByEmail(email: string): Promise<UserEntity> {

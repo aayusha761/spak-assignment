@@ -22,7 +22,11 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('/login')
-  async login(@Body(new ValidationPipe()) loginCredentials: LoginDTO, @Req() req, @Response() res) {
+  async login(
+    @Body(new ValidationPipe()) loginCredentials: LoginDTO,
+    @Req() req,
+    @Response() res,
+  ) {
     const res1 = await this.userService.login(loginCredentials);
     res.status(HttpStatus.UNAUTHORIZED).json(res1);
   }
@@ -38,8 +42,8 @@ export class UserController {
   }
 
   @Post('/logout')
-  async logout() {
-    return await this.userService.logout();
+  async logout(@Body('access_token') accessToken: string, @Req() req) {
+    return await this.userService.logout(accessToken);
   }
 
   @Get('/getUserByEmail')

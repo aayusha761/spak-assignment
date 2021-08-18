@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import UserEntity from '../db/entities/user.entity';
 import * as JWT from 'jsonwebtoken';
+import JWTManager from '../logout/JWTManager';
 
 @Injectable()
 class AuthenticationGuard implements CanActivate {
@@ -14,6 +15,9 @@ class AuthenticationGuard implements CanActivate {
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const jwtToken = await request.headers.jwttoken;
+    if (JWTManager.revokedJWTs.includes(jwtToken)) {
+      return false;
+    }
     const user: UserEntity = await this.validateJWTToken(jwtToken);
     if (user) {
       request.user = user;
@@ -35,7 +39,6 @@ class AuthenticationGuard implements CanActivate {
       }
       return user;
     } catch (e) {
-      console.log(e);
       throw new UnauthorizedException('Unauthorised');
     }
   }
