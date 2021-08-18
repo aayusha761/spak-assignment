@@ -1,7 +1,8 @@
 import {
   BaseEntity,
   BeforeInsert,
-  Column, Entity,
+  Column,
+  Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import * as Bcrypt from 'bcryptjs';
@@ -28,6 +29,9 @@ class UserEntity extends BaseEntity {
 
   @Column()
   gender: string;
+
+  @Column({ default: 0 })
+  access: number;
 
   @BeforeInsert()
   public async beforeInsertHooks() {
