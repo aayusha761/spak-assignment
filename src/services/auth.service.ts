@@ -16,22 +16,6 @@ export default class AuthService {
     return { expires_in: expiresIn, access_token: token };
   }
 
-  // public async validateJWTToken(jwtToken: string): Promise<boolean> {
-  //   try {
-  //     const decoded: any = JWT.verify(jwtToken, this.mySecret);
-  //     const { user_ } = decoded;
-  //     const { email } = user_;
-  //     const user = await UserEntity.getUserByEmail(email);
-  //     if (!user) {
-  //       return false;
-  //     }
-  //     return Boolean(user);
-  //   } catch (e) {
-  //     console.log(e);
-  //     return false;
-  //   }
-  // }
-
   public async logout() {
     return 'Logout successful';
   }
