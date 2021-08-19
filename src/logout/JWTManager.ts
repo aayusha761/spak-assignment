@@ -15,7 +15,6 @@ const JWTManager = {
   },
 
   revoke: async function (jwtToken: string) {
-    console.log(JWTManager.revokedJWTs.includes(jwtToken));
     if (
       JWTManager.isValid(jwtToken) &&
       !JWTManager.revokedJWTs.includes(jwtToken)
