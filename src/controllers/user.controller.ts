@@ -38,7 +38,11 @@ export class UserController {
     @Response() res,
   ) {
     const msg = await this.userService.createUser(createUserDTO);
-    res.status(HttpStatus.OK).json(msg);
+    if (msg.code === HttpStatus.BAD_REQUEST) {
+      res.status(HttpStatus.BAD_REQUEST).json(msg);
+    } else {
+      res.status(HttpStatus.OK).json(msg);
+    }
   }
 
   @Post('/logout')

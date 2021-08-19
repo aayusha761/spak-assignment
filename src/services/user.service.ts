@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import LoginDTO from '../schema/LoginDTO';
 import CreateUserDTO from '../schema/CreateUserDTO';
 import UserEntity from '../db/entities/user.entity';
@@ -16,12 +16,18 @@ export class UserService {
     const user: UserEntity = await UserEntity.getUserByEmail(email);
 
     if (!user) {
-      return { message: EMessages.UNAUTHORIZED_REQUEST, code: 401 };
+      return {
+        message: EMessages.UNAUTHORIZED_REQUEST,
+        code: HttpStatus.UNAUTHORIZED,
+      };
     }
     if (await bcryprt.compare(password, user.password)) {
       return await this.authService.generateJWTToken(user);
     } else {
-      return { message: EMessages.UNAUTHORIZED_REQUEST, code: 401 };
+      return {
+        message: EMessages.UNAUTHORIZED_REQUEST,
+        code: HttpStatus.UNAUTHORIZED,
+      };
     }
   }
 
@@ -34,15 +40,21 @@ export class UserService {
     if (!user && !user1) {
       const newUser: UserEntity = await UserEntity.create(createUserDTO);
       const data = await UserEntity.save(newUser);
-      return { message: 'User Signed Up Successfully', code: 200 };
+      return { message: 'User Signed Up Successfully', code: HttpStatus.OK };
     } else {
-      return { message: 'User Already Exists', code: 200 };
+      return {
+        message: 'Email or mobile already in use',
+        code: HttpStatus.BAD_REQUEST,
+      };
     }
   }
 
   async logout(accessToken: string) {
     await JWTManager.revoke(accessToken);
-    return { message: EMessages.INVALID_AUTHENTICATION_TOKEN, code: 401 };
+    return {
+      message: EMessages.INVALID_AUTHENTICATION_TOKEN,
+      code: HttpStatus.BAD_REQUEST,
+    };
   }
 
   async findUserByEmail(email: string): Promise<UserEntity> {
