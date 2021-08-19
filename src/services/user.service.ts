@@ -50,11 +50,7 @@ export class UserService {
   }
 
   async logout(accessToken: string) {
-    await JWTManager.revoke(accessToken);
-    return {
-      message: EMessages.INVALID_AUTHENTICATION_TOKEN,
-      code: HttpStatus.BAD_REQUEST,
-    };
+    return await JWTManager.revoke(accessToken);
   }
 
   async findUserByEmail(email: string): Promise<UserEntity> {

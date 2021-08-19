@@ -1,4 +1,6 @@
 import * as JWT from 'jsonwebtoken';
+import EMessages from '../enums/EMessages';
+import { HttpStatus } from '@nestjs/common';
 
 const JWTManager = {
   revokedJWTs: [],
@@ -13,8 +15,21 @@ const JWTManager = {
   },
 
   revoke: async function (jwtToken: string) {
-    if (JWTManager.isValid(jwtToken)) {
+    console.log(JWTManager.revokedJWTs.includes(jwtToken));
+    if (
+      JWTManager.isValid(jwtToken) &&
+      !JWTManager.revokedJWTs.includes(jwtToken)
+    ) {
       JWTManager.revokedJWTs.push(jwtToken);
+      return {
+        message: EMessages.SUCCESS,
+        code: HttpStatus.OK,
+      };
+    } else {
+      return {
+        message: EMessages.INVALID_AUTHENTICATION_TOKEN,
+        code: HttpStatus.BAD_REQUEST,
+      };
     }
   },
 };

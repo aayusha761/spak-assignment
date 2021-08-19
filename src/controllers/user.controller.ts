@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  Post,
-  Req,
-  Response,
-  UseGuards,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, Req, Res, Response, UseGuards, ValidationPipe } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import LoginDTO from '../schema/LoginDTO';
 import CreateUserDTO from '../schema/CreateUserDTO';
@@ -46,8 +36,13 @@ export class UserController {
   }
 
   @Post('/logout')
-  async logout(@Body('access_token') accessToken: string, @Req() req) {
-    return await this.userService.logout(accessToken);
+  async logout(@Body('access_token') accessToken: string, @Req() req, @Res() res) {
+    const msg = await this.userService.logout(accessToken);
+    if (msg.code === HttpStatus.BAD_REQUEST) {
+      res.status(HttpStatus.BAD_REQUEST).json(msg);
+    } else {
+      res.status(HttpStatus.OK).json(msg);
+    }
   }
 
   @Get('/getUserByEmail')
