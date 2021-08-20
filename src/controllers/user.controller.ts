@@ -16,7 +16,7 @@ export class UserController {
     @Body(new ValidationPipe()) loginCredentials: LoginDTO,
     @Req() req,
     @Response() res,
-  ) {
+  ): Promise<any> {
     const res1 = await this.userService.login(loginCredentials);
     res.status(HttpStatus.UNAUTHORIZED).json(res1);
   }
@@ -26,7 +26,7 @@ export class UserController {
     @Body(new ValidationPipe()) createUserDTO: CreateUserDTO,
     @Req() req,
     @Response() res,
-  ) {
+  ): Promise<any> {
     const msg = await this.userService.createUser(createUserDTO);
     if (msg.code === HttpStatus.BAD_REQUEST) {
       res.status(HttpStatus.BAD_REQUEST).json(msg);
@@ -36,7 +36,7 @@ export class UserController {
   }
 
   @Post('/logout')
-  async logout(@Body('access_token') accessToken: string, @Req() req, @Res() res) {
+  async logout(@Body('access_token') accessToken: string, @Req() req, @Res() res): Promise<any> {
     const msg = await this.userService.logout(accessToken);
     if (msg.code === HttpStatus.BAD_REQUEST) {
       res.status(HttpStatus.BAD_REQUEST).json(msg);
